@@ -1,0 +1,97 @@
+[project]
+name = "bmmm"
+version = "0.1.0"
+description = "Bayesian Marketing Mix Modeling — portfolio project (DS + ML Engineering)"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+authors = [{ name = "Vova" }]
+license = { text = "MIT" }
+
+dependencies = [
+    "pymc-marketing>=0.16.0",
+    "numpyro>=0.18.0",
+    "arviz>=0.22.0",
+    "pandas>=2.2.0",
+    "numpy>=1.26.0",
+    "matplotlib>=3.9.0",
+    "pydantic>=2.9.0",
+    "pydantic-settings>=2.5.0",
+    "pyyaml>=6.0.2",
+    "typer>=0.15.0",
+    "rich>=13.9.0",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+]
+
+[project.optional-dependencies]
+dashboard = [
+    "streamlit>=1.40.0",
+    "plotly>=5.24.0",
+]
+mlops = [
+    "mlflow>=2.17.0",
+]
+
+[project.scripts]
+bmmm = "bmmm.cli:app"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.8.0",
+    "mypy>=1.13.0",
+    "pytest>=8.3.0",
+    "pytest-cov>=6.0.0",
+    "httpx>=0.27.0",
+    "types-pyyaml>=6.0.12",
+    "pandas-stubs>=2.2.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/bmmm"]
+
+# ----------------------------------------------------------------------------
+# Tooling
+# ----------------------------------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "F",    # pyflakes
+    "I",    # isort
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "C4",   # comprehensions
+    "SIM",  # simplify
+    "RUF",  # ruff-specific
+]
+ignore = [
+    "E501",  # line length handled by formatter
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011"]
+
+[tool.mypy]
+python_version = "3.12"
+packages = ["bmmm"]
+strict = false
+warn_unused_ignores = true
+warn_redundant_casts = true
+disallow_untyped_defs = true
+ignore_missing_imports = true
+plugins = ["pydantic.mypy"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra -q"
+markers = [
+    "slow: marks tests that run MCMC sampling (deselect with '-m \"not slow\"')",
+]

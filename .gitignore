@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Virtual env / uv
+.venv/
+uv.lock.bak
+
+# Caches
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Artifacts (large model outputs; keep a small committed one if needed for demo)
+artifacts/*.nc
+artifacts/*.json
+!artifacts/.gitkeep
+
+# MLflow
+mlruns/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
