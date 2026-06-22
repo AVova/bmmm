@@ -8,9 +8,13 @@ authors = [{ name = "Vova" }]
 license = { text = "MIT" }
 
 dependencies = [
-    "pymc-marketing>=0.16.0",
-    "numpyro>=0.18.0",
+    # Pinned <0.20: the classic `MMM` (with built-in budget optimisation,
+    # parameter-recovery and contribution helpers) is deprecated in 0.20 in
+    # favour of the multidimensional API. We deliberately stay on the stable,
+    # feature-complete class for this project.
+    "pymc-marketing>=0.19.0,<0.20.0",
     "arviz>=0.22.0",
+    "scipy>=1.14.0",
     "pandas>=2.2.0",
     "numpy>=1.26.0",
     "matplotlib>=3.9.0",
@@ -21,6 +25,7 @@ dependencies = [
     "rich>=13.9.0",
     "fastapi>=0.115.0",
     "uvicorn[standard]>=0.32.0",
+    "nutpie>=0.16.10",
 ]
 
 [project.optional-dependencies]
@@ -44,6 +49,10 @@ dev = [
     "httpx>=0.27.0",
     "types-pyyaml>=6.0.12",
     "pandas-stubs>=2.2.0",
+]
+docs = [
+    "mkdocs-material>=9.5.0",
+    "mkdocstrings[python]>=0.27.0",
 ]
 
 [build-system]
@@ -94,4 +103,11 @@ testpaths = ["tests"]
 addopts = "-ra -q"
 markers = [
     "slow: marks tests that run MCMC sampling (deselect with '-m \"not slow\"')",
+]
+filterwarnings = [
+    # The classic MMM is deprecated upstream; we intentionally pin to it (see deps).
+    # (?s) so '.' spans the multi-line warning text that starts with a newline.
+    "ignore:(?s).*MMM class is deprecated.*:FutureWarning",
+    "ignore:(?s).*_from_dict is deprecated.*:FutureWarning",
+    "ignore:(?s).*Deleting a single level of a MultiIndex.*:FutureWarning",
 ]
