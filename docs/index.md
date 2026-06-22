@@ -1,5 +1,9 @@
 # BMMM: Bayesian Marketing Mix Modeling
 
+!!! tip "🎛️ Live dashboard"
+    Try the model interactively, with a scenario planner and budget optimizer:
+    **[avova-ds.streamlit.app](https://avova-ds.streamlit.app/)**
+
 This project builds a Marketing Mix Model (MMM) on top of
 [PyMC-Marketing](https://www.pymc-marketing.io/) and wraps it in the usual
 engineering pieces: a typed config, a command-line tool, a small API, Docker,

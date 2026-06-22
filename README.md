@@ -4,11 +4,25 @@
 [![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://avova.github.io/bmmm/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-**Live dashboard:** _add your Streamlit Cloud URL here after deploying_ &nbsp;|&nbsp;
-**Docs:** https://avova.github.io/bmmm/
+<div align="center">
 
-A Marketing Mix Model (MMM) built on
-[PyMC-Marketing](https://www.pymc-marketing.io/), with the engineering pieces
+## 🔗 &nbsp; Live demos &nbsp; 🔗
+
+✨ 🟢 ✨ 🔵 ✨ 🟢 ✨ 🔵 ✨ 🟢 ✨ 🔵 ✨ 🟢 ✨ 🔵 ✨ 🟢 ✨
+
+### 🎛️ &nbsp; [**Live dashboard**](https://avova-ds.streamlit.app/)
+
+Interactive scenario planner, budget optimizer and parameter recovery.
+
+### 📚 &nbsp; [**Project documentation**](https://avova.github.io/bmmm/)
+
+The full write-up: method, results, CLI and API reference.
+
+✨ 🔵 ✨ 🟢 ✨ 🔵 ✨ 🟢 ✨ 🔵 ✨ 🟢 ✨ 🔵 ✨ 🟢 ✨ 🔵 ✨
+
+</div>
+
+A Marketing Mix Model (MMM) built on PyMC-Marketing, with the engineering pieces
 around it: a typed config, a command-line tool, a small API, Docker, CI and an
 interactive dashboard.
 
