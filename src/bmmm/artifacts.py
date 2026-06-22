@@ -6,7 +6,7 @@ A trained run produces three files in one directory:
     data.csv        the (synthetic) dataset the model was trained on
     metadata.json   config, diagnostics, ground truth and a timestamp
 
-Loading the bundle never re-samples — it just reads these files.
+Loading the bundle never re-samples; it just reads these files.
 """
 
 from __future__ import annotations

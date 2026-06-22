@@ -1,11 +1,11 @@
 """Budget optimisation over the recovered response curves.
 
-PyMC-Marketing ships a budget optimiser, but it operates in the model's
-internally-scaled space and behaves poorly through a save/load round-trip with
-the classic ``MMM``. Instead we reconstruct each channel's steady-state response
-curve *in original sales units* from the posterior and optimise allocation
-ourselves. This is transparent, concave (hence a unique optimum) and tells a
-clear story: reallocate spend until marginal ROI is equalised across channels.
+We reconstruct each channel's steady-state response curve *in original sales
+units* from the posterior and optimise the allocation against it. The objective
+is concave (each channel saturates), so it has a unique optimum, and the answer
+is in plain sales units, which makes it easy to read and to check against the
+model's own contribution numbers. Economically, the optimum equalises the
+marginal return across channels.
 
 Steady-state weekly response for a sustained weekly spend ``s`` (a constant
 input is unchanged by normalised adstock):
@@ -74,6 +74,11 @@ def total_response(allocation: dict[str, float], curves: dict[str, ResponseCurve
     return float(sum(curves[ch].response(spend) for ch, spend in allocation.items()))
 
 
+def marginal_roas(curve: ResponseCurve, spend: float, eps: float = 1.0) -> float:
+    """Return on the next unit of spend (the slope of the response curve)."""
+    return float((curve.response(spend + eps) - curve.response(spend)) / eps)
+
+
 def optimize_budget(
     curves: dict[str, ResponseCurve],
     total_budget: float,
@@ -110,6 +115,42 @@ def optimize_budget(
     if s > 0:
         alloc = {ch: v * total_budget / s for ch, v in alloc.items()}
     return alloc
+
+
+def total_response_at_budget(curves: dict[str, ResponseCurve], total_budget: float) -> float:
+    """Best achievable weekly response for a total budget (optimally split)."""
+    return total_response(optimize_budget(curves, total_budget), curves)
+
+
+def profit_curve(
+    curves: dict[str, ResponseCurve],
+    budgets: np.ndarray,
+    margin: float = 1.0,
+) -> pd.DataFrame:
+    """Profit vs total budget, with the budget optimally allocated at each level.
+
+    ``profit = margin * ad_driven_sales - budget``. With ``margin = 1`` sales are
+    treated as profit before ad cost; a real gross margin shifts the break-even.
+    Columns: ``budget``, ``ad_sales``, ``profit``, ``marginal_roas`` (``dC/dB``).
+    """
+    budgets = np.asarray(budgets, dtype=np.float64)
+    ad_sales = np.array([total_response_at_budget(curves, float(b)) for b in budgets])
+    out = pd.DataFrame({"budget": budgets, "ad_sales": ad_sales})
+    out["profit"] = margin * out["ad_sales"] - out["budget"]
+    out["marginal_roas"] = np.gradient(ad_sales, budgets)
+    return out
+
+
+def profit_maximizing_budget(
+    curves: dict[str, ResponseCurve],
+    budgets: np.ndarray,
+    margin: float = 1.0,
+) -> float:
+    """Total budget that maximises profit (where marginal ROAS reaches 1/margin)."""
+    curve = profit_curve(curves, budgets, margin)
+    b = curve["budget"].to_numpy()
+    p = curve["profit"].to_numpy()
+    return float(b[int(p.argmax())])
 
 
 def optimization_summary(

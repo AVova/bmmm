@@ -46,6 +46,6 @@ def test_ground_truth_populated() -> None:
     for ch in gt.channel_names:
         assert gt.adstock_alpha[ch] > 0
         assert gt.contribution[ch] > 0
-        assert np.isfinite(gt.roi[ch])
+        assert np.isfinite(gt.roas[ch])
     records = gt.as_records()
     assert len(records) == len(gt.channel_names)

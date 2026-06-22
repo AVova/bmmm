@@ -1,7 +1,7 @@
 """FastAPI service exposing the trained MMM.
 
 The model is loaded once at startup from an artifact bundle; every endpoint
-answers from the persisted posterior (response curves) — no MCMC at request
+answers from the persisted posterior (response curves), with no MCMC at request
 time. Point ``BMMM_ARTIFACTS`` at a bundle directory (default ``artifacts``).
 """
 

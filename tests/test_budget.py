@@ -4,7 +4,14 @@ from __future__ import annotations
 
 import numpy as np
 
-from bmmm.model.budget import ResponseCurve, optimize_budget, total_response
+from bmmm.model.budget import (
+    ResponseCurve,
+    marginal_roas,
+    optimize_budget,
+    profit_curve,
+    profit_maximizing_budget,
+    total_response,
+)
 
 
 def _curves() -> dict[str, ResponseCurve]:
@@ -42,3 +49,20 @@ def test_response_curve_monotonic_and_saturating() -> None:
     assert np.all(np.diff(resp) > 0)  # increasing
     # Diminishing returns: marginal gain shrinks.
     assert (resp[2] - resp[1]) < (resp[1] - resp[0])
+
+
+def test_marginal_roas_decreases_with_spend() -> None:
+    c = ResponseCurve("c", lam=2.0, beta=1.0, spend_scale=100.0, target_scale=1000.0)
+    assert marginal_roas(c, 10.0) > marginal_roas(c, 200.0)
+
+
+def test_profit_curve_columns_and_concavity() -> None:
+    curves = _curves()
+    budgets = np.linspace(10, 600, 25)
+    curve = profit_curve(curves, budgets)
+    assert {"budget", "ad_sales", "profit", "marginal_roas"}.issubset(curve.columns)
+    # Marginal ROAS should fall as the budget grows (diminishing returns).
+    assert curve["marginal_roas"].iloc[0] > curve["marginal_roas"].iloc[-1]
+    # Profit peaks at an interior budget, not the largest one.
+    best = profit_maximizing_budget(curves, budgets)
+    assert budgets[0] < best < budgets[-1]

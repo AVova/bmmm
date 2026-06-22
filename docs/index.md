@@ -1,80 +1,99 @@
-# BMMM — Bayesian Marketing Mix Modeling
+# BMMM: Bayesian Marketing Mix Modeling
 
-A compact, **agency-style** Bayesian Marketing Mix Model (MMM) built on
-[PyMC-Marketing](https://www.pymc-marketing.io/) and wrapped in a production-ish
-ML-engineering shell: typed config, a CLI, a FastAPI service, Docker, CI/CD and
-a live interactive dashboard.
+This project builds a Marketing Mix Model (MMM) on top of
+[PyMC-Marketing](https://www.pymc-marketing.io/) and wraps it in the usual
+engineering pieces: a typed config, a command-line tool, a small API, Docker,
+CI and an interactive dashboard.
 
-!!! tip "The headline story"
-    The project's signature is **parameter recovery on synthetic data**. We
-    *define* the true adstock, saturation and ROI of each media channel, simulate
-    sales, then show the model recovers those parameters inside their credible
-    intervals — evidence of understanding the model, not just calling `.fit()`.
+The main idea is **parameter recovery on synthetic data**. We make up a dataset
+where we already know the true effect of each marketing channel, fit the model
+to it, and check that the model finds those true values back. If it does, we can
+trust it on real data where the true values are unknown.
 
-## What problem does an MMM solve?
+## What an MMM answers
 
-> Given spend across TV / social / search, how much did each channel actually
-> drive sales, and how should next quarter's budget be allocated?
+> Given how much we spent on TV, social and search, how much did each channel
+> add to sales, and how should we split next quarter's budget?
 
-The **Bayesian** formulation answers with full uncertainty — credible intervals
-on ROAS and contributions — rather than fragile point estimates.
+The model gives a number for each of these questions and also a range around that
+number, so you can see how certain the answer is instead of trusting a single
+point estimate.
 
-## Results at a glance
+## Results
 
-The model trained on 3 years of weekly synthetic data (`configs/default.yaml`,
-4000 posterior draws, NUTS via `nutpie`):
+Trained on 3 years of weekly synthetic data (`configs/default.yaml`, 4000
+posterior draws):
 
-| Metric | Value |
+| What | Value |
 |---|---|
-| In-sample R² | **0.92** |
-| MAPE | **2.8 %** |
-| Max R̂ | **1.01** |
-| Divergences | **0** |
-| Adstock α recovery | **3 / 3 channels inside the 94 % HDI** |
+| In-sample R² | 0.93 |
+| MAPE | 2.6% |
+| Max R-hat | 1.01 |
+| Divergences | 0 |
+| Adstock recovery | 3 of 3 channels inside the 94% interval |
 
-### Parameter recovery (the signature plot)
+### Did the model recover the true values?
 
-True adstock retention (red) vs the recovered posterior (blue, mean + 94 % HDI):
+Red points are the true adstock values we put into the data. Blue points are what
+the model estimated, with its uncertainty range. All three true values fall
+inside the estimated range.
 
 ![Parameter recovery](img/recovery.png){ width="640" }
 
-### Model fit
+### Where do sales come from?
 
-![Posterior predictive vs actual](img/posterior_predictive.png){ width="760" }
+Each week's sales split into the baseline (everything not driven by ads) plus the
+three channels, shown in absolute sales and as a share of sales.
 
-### Sales decomposition
+![Sales decomposition, absolute](img/contributions.png){ width="820" }
 
-How much of weekly sales each channel and the baseline explain:
+![Sales decomposition, share of sales](img/contributions_share.png){ width="820" }
 
-![Sales decomposition](img/contributions.png){ width="760" }
+### How efficient is each channel?
 
-### Return on ad spend
+ROAS is sales generated per unit of spend.
 
 ![ROAS by channel](img/roas.png){ width="640" }
 
-## How it fits together
+### How much should we spend?
+
+Looking at the *next* unit of spend, TV is already below break-even while the
+other channels still pay off, and the total budget sits a little past its
+profit-maximising point. See [budget optimization](budget-optimization.md).
+
+![Profit vs total budget](img/budget_profit.png){ width="680" }
+
+## How the pieces connect
 
 ```
-synthetic data (known ground truth)
-        │
-        ▼
-   PyMC-Marketing MMM ──fit──▶ idata.nc (trained offline, fast sampler)
-        │                          │
-        │                   ┌──────┴───────┐
-        ▼                   ▼              ▼
-  parameter recovery   FastAPI service   Streamlit dashboard
-   (this site)         /predict          scenario planning
-                       /optimize-budget  (reads idata, no sampling)
+synthetic data (we know the true effects)
+        |
+        v
+   PyMC-Marketing MMM  --fit-->  saved model (idata.nc)
+        |                            |
+        |                     +------+------+
+        v                     v             v
+  parameter recovery     API service   dashboard
+  (this site)            /predict      scenario planning
+                         /optimize     (read the saved model,
+                                        no refitting)
 ```
 
-**Key design choice:** MCMC sampling is slow, so the model is trained *offline*
-and the posterior is persisted. The service and dashboard load the saved
-posterior — they never sample at request time.
+Fitting the model takes minutes, so we do it once and save the result. The API
+and dashboard load that saved result and never refit. CI runs a tiny 50-draw fit
+only to check that training still works.
 
 ## Where to go next
 
-- [What is BMMM →](concepts.md) — adstock, saturation and the model structure
-- [Parameter recovery →](parameter-recovery.md) — the validation methodology
-- [Budget optimization →](budget-optimization.md) — reallocating spend
-- [CLI](usage-cli.md) and [API](usage-api.md) — how to run it
-- [API Reference](api/config.md) — auto-generated from docstrings
+**This project** (what was done and how to run it):
+
+- [Parameter recovery](parameter-recovery.md): the model, the validation and the
+  results
+- [Budget optimization](budget-optimization.md): splitting a budget and sizing it
+- [CLI](usage-cli.md) and [API](usage-api.md): running it
+- [API Reference](api/config.md): generated from the code's docstrings
+
+**Theory** (the general ideas):
+
+- [Concepts](concepts.md): adstock, saturation, Bayesian inference, sampling and
+  the tools

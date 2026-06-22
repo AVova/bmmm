@@ -7,7 +7,7 @@ data:
   seed: 42
   start_date: "2023-01-01"
 
-  baseline: 2000.0
+  intercept: 2000.0
   trend_slope: 2.0
   seasonality_amplitude: 400.0
   n_fourier: 2
@@ -17,18 +17,21 @@ data:
 
   channels:
     - name: tv
+      label: "TV"
       adstock_alpha: 0.70     # long carry-over (brand)
       saturation_lam: 1.20
       beta: 1800.0
       spend_mean: 600.0
       spend_sigma: 0.35
     - name: social
+      label: "Social Networks"
       adstock_alpha: 0.40
       saturation_lam: 2.50
       beta: 1200.0
       spend_mean: 350.0
       spend_sigma: 0.50
     - name: search
+      label: "Web Search"
       adstock_alpha: 0.20     # short carry-over (performance)
       saturation_lam: 3.50
       beta: 900.0
@@ -38,7 +41,7 @@ data:
 model:
   adstock_l_max: 12
   yearly_seasonality: 2
-  control_columns: ["price"]
+  control_columns: ["price", "time"]   # 'time' = standardized trend regressor
   intercept_sigma: 2.0
   saturation_beta_sigma: 2.0
   adstock_alpha_a: 1.0

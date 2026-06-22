@@ -1,8 +1,8 @@
 # CLI
 
 The `bmmm` command (Typer) drives the whole pipeline. Every command reads a YAML
-config — `configs/default.yaml` for real runs, `configs/ci.yaml` for fast smoke
-runs. Full reference: [`bmmm.cli`](api/cli.md).
+config (`configs/default.yaml` for real runs, `configs/ci.yaml` for fast smoke
+runs). Full reference: [`bmmm.cli`](api/cli.md).
 
 ## Install
 

@@ -23,11 +23,18 @@ class ChannelSpec(BaseModel):
     """
 
     name: str
+    label: str = Field(default="", description="Display name for plots; defaults to name")
     adstock_alpha: float = Field(ge=0.0, lt=1.0, description="Geometric adstock retention")
     saturation_lam: float = Field(gt=0.0, description="Logistic saturation steepness")
     beta: float = Field(gt=0.0, description="Contribution amplitude in sales units")
     spend_mean: float = Field(gt=0.0, description="Mean weekly spend level")
     spend_sigma: float = Field(ge=0.0, description="Std-dev of weekly spend (lognormal)")
+
+    @model_validator(mode="after")
+    def _default_label(self) -> ChannelSpec:
+        if not self.label:
+            self.label = self.name
+        return self
 
 
 class DataConfig(BaseModel):
@@ -37,12 +44,12 @@ class DataConfig(BaseModel):
     seed: int = 42
     start_date: str = "2023-01-01"
 
-    baseline: float = Field(default=2000.0, description="Intercept (organic sales)")
-    trend_slope: float = Field(default=2.0, description="Linear trend per week")
+    intercept: float = Field(default=2000.0, description="Constant organic sales level")
+    trend_slope: float = Field(default=2.0, description="Linear trend added per week")
     seasonality_amplitude: float = Field(default=400.0, ge=0.0)
     n_fourier: int = Field(default=2, ge=1, le=6, description="Yearly seasonality harmonics")
 
-    price_beta: float = Field(default=-300.0, description="Effect of (centered) price control")
+    price_beta: float = Field(default=-300.0, description="Price-effect coefficient (negative)")
     noise_sigma: float = Field(default=150.0, ge=0.0, description="Observation noise std-dev")
 
     channels: list[ChannelSpec]
@@ -58,13 +65,18 @@ class DataConfig(BaseModel):
     def channel_names(self) -> list[str]:
         return [c.name for c in self.channels]
 
+    @property
+    def labels(self) -> dict[str, str]:
+        """Map each channel name to its display label."""
+        return {c.name: c.label for c in self.channels}
+
 
 class ModelConfig(BaseModel):
     """Model structure and priors handed to PyMC-Marketing."""
 
     adstock_l_max: int = Field(default=12, gt=0)
     yearly_seasonality: int = Field(default=2, ge=0, description="Fourier modes; 0 disables")
-    control_columns: list[str] = Field(default_factory=lambda: ["price"])
+    control_columns: list[str] = Field(default_factory=lambda: ["price", "time"])
 
     # Prior scales (kept simple & explicit so they show up in the notebook).
     intercept_sigma: float = 2.0

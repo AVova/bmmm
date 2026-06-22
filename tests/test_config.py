@@ -12,7 +12,7 @@ def test_load_default_yaml() -> None:
     cfg = Config.from_yaml("configs/default.yaml")
     assert cfg.data.channel_names == ["tv", "social", "search"]
     assert cfg.sampler.nuts_sampler == "nutpie"
-    assert cfg.model.control_columns == ["price"]
+    assert cfg.model.control_columns == ["price", "time"]
 
 
 def test_duplicate_channel_names_rejected() -> None:

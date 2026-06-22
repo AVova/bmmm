@@ -2,7 +2,7 @@
 
 A thin [FastAPI](https://fastapi.tiangolo.com/) service exposes the trained
 model. It loads the artifact bundle **once at startup** and answers every request
-from the persisted posterior — there is **no MCMC at request time**. Full
+from the saved model, so there is **no refitting at request time**. Full
 reference: [`bmmm.service.app`](api/service-app.md).
 
 ## Run it

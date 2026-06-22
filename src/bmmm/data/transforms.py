@@ -61,7 +61,7 @@ def geometric_adstock(
 def logistic_saturation(x: FloatArray, lam: float) -> FloatArray:
     """Logistic saturation transform.
 
-    ``f(x) = (1 - exp(-lam * x)) / (1 + exp(-lam * x))`` — a diminishing-returns
+    ``f(x) = (1 - exp(-lam * x)) / (1 + exp(-lam * x))``, a diminishing-returns
     curve mapping non-negative spend into ``[0, 1)``. ``lam`` controls how
     quickly the channel saturates.
     """

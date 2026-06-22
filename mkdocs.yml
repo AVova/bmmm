@@ -64,14 +64,14 @@ plugins:
 
 nav:
   - Home: index.md
-  - Concepts:
-      - What is BMMM: concepts.md
+  - This project:
       - Parameter recovery: parameter-recovery.md
       - Budget optimization: budget-optimization.md
-  - Usage:
       - CLI: usage-cli.md
       - API service: usage-api.md
-  - API Reference:
+  - Theory:
+      - Concepts: concepts.md
+  - API reference:
       - bmmm.config: api/config.md
       - bmmm.artifacts: api/artifacts.md
       - bmmm.cli: api/cli.md

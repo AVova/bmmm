@@ -5,8 +5,6 @@ Skipped automatically if no artifact bundle has been trained yet.
 
 from __future__ import annotations
 
-from pathlib import Path
-
 import pytest
 from fastapi.testclient import TestClient
 
