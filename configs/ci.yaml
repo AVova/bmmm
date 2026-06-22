@@ -1,0 +1,30 @@
+# CI smoke configuration: proves the pipeline trains end-to-end without crashing.
+# NOT meant for quality — tiny draws and the compile-free `pymc` sampler keep it
+# fast enough for GitHub Actions.
+
+data:
+  n_weeks: 60
+  seed: 0
+  start_date: "2023-01-01"
+  baseline: 2000.0
+  trend_slope: 2.0
+  seasonality_amplitude: 400.0
+  n_fourier: 2
+  price_beta: -300.0
+  noise_sigma: 150.0
+  channels:
+    - {name: tv,     adstock_alpha: 0.70, saturation_lam: 1.2, beta: 1800.0, spend_mean: 600.0, spend_sigma: 0.35}
+    - {name: social, adstock_alpha: 0.40, saturation_lam: 2.5, beta: 1200.0, spend_mean: 350.0, spend_sigma: 0.50}
+
+model:
+  adstock_l_max: 8
+  yearly_seasonality: 1
+  control_columns: ["price"]
+
+sampler:
+  draws: 50
+  tune: 50
+  chains: 2               # >=2 so r-hat is computable
+  target_accept: 0.9
+  nuts_sampler: pymc      # no compile step -> fast in CI
+  random_seed: 0

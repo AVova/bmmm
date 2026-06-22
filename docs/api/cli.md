@@ -1,0 +1,3 @@
+# `bmmm.cli`
+
+::: bmmm.cli

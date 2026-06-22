@@ -28,6 +28,9 @@ artifacts/*.json
 # MLflow
 mlruns/
 
+# MkDocs build output
+site/
+
 # OS / editor
 .DS_Store
 .idea/

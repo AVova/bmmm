@@ -1,0 +1,3 @@
+# `bmmm.config`
+
+::: bmmm.config

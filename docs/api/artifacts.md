@@ -1,0 +1,3 @@
+# `bmmm.artifacts`
+
+::: bmmm.artifacts

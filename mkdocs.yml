@@ -1,0 +1,85 @@
+site_name: BMMM — Bayesian Marketing Mix Modeling
+site_description: >-
+  An agency-style Bayesian Marketing Mix Model on PyMC-Marketing, with parameter
+  recovery on synthetic data, a CLI, a FastAPI service and a live dashboard.
+site_author: Vova
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - content.code.copy
+    - toc.follow
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.arithmatex:
+      generic: true
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: numpy
+            show_root_heading: true
+            show_source: true
+            show_signature_annotations: true
+            separate_signature: true
+            members_order: source
+            filters: ["!^_"]
+
+nav:
+  - Home: index.md
+  - Concepts:
+      - What is BMMM: concepts.md
+      - Parameter recovery: parameter-recovery.md
+      - Budget optimization: budget-optimization.md
+  - Usage:
+      - CLI: usage-cli.md
+      - API service: usage-api.md
+  - API Reference:
+      - bmmm.config: api/config.md
+      - bmmm.artifacts: api/artifacts.md
+      - bmmm.cli: api/cli.md
+      - bmmm.data.transforms: api/data-transforms.md
+      - bmmm.data.generate: api/data-generate.md
+      - bmmm.model.mmm: api/model-mmm.md
+      - bmmm.model.analysis: api/model-analysis.md
+      - bmmm.model.budget: api/model-budget.md
+      - bmmm.viz.plots: api/viz-plots.md
+      - bmmm.service.app: api/service-app.md
+      - bmmm.service.schemas: api/service-schemas.md
