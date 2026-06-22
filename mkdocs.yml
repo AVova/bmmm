@@ -3,6 +3,9 @@ site_description: >-
   An agency-style Bayesian Marketing Mix Model on PyMC-Marketing, with parameter
   recovery on synthetic data, a CLI, a FastAPI service and a live dashboard.
 site_author: Vova
+site_url: https://avova.github.io/bmmm/
+repo_url: https://github.com/AVova/bmmm
+repo_name: AVova/bmmm
 
 theme:
   name: material

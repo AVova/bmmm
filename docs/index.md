@@ -71,17 +71,27 @@ synthetic data (we know the true effects)
         v
    PyMC-Marketing MMM  --fit-->  saved model (idata.nc)
         |                            |
-        |                     +------+------+
-        v                     v             v
-  parameter recovery     API service   dashboard
-  (this site)            /predict      scenario planning
-                         /optimize     (read the saved model,
-                                        no refitting)
+        |              +-------------+--------------+
+        v              v                            v
+  parameter recovery   API service            export-dashboard
+  (this site)          /predict, /optimize    (compact artifact)
+                       (full model, Docker)         |
+                                                    v
+                                                 dashboard
+                                                 (NumPy, no PyMC)
 ```
 
 Fitting the model takes minutes, so we do it once and save the result. The API
-and dashboard load that saved result and never refit. CI runs a tiny 50-draw fit
-only to check that training still works.
+and dashboard never refit. CI runs a tiny 50-draw fit only to check that training
+still works.
+
+The dashboard and the API reach the model in two different ways, on purpose. The
+**API** loads the full PyMC model and serves it over HTTP for other systems to
+integrate with. The **dashboard does not call the API**: to keep the public
+Streamlit Cloud deploy light it reads a small precomputed export
+(`bmmm export-dashboard`) and recomputes in plain NumPy, so it needs no PyMC, no
+92 MB model and no always-on server. See [API service](usage-api.md) for the
+trade-off.
 
 ## Where to go next
 

@@ -1,0 +1,29 @@
+# Two services from one image: the FastAPI service and the Streamlit dashboard.
+#
+#   docker compose up            # both services
+#   docker compose up dashboard  # dashboard only (works without a trained model)
+#
+# The API needs a trained bundle (artifacts/mmm.nc). Produce it with
+# `uv run bmmm train`; it is mounted read-only from ./artifacts.
+
+services:
+  api:
+    build: .
+    image: bmmm
+    ports:
+      - "8000:8000"
+    environment:
+      BMMM_ARTIFACTS: /app/artifacts
+    volumes:
+      - ./artifacts:/app/artifacts:ro
+    command:
+      ["uvicorn", "bmmm.service.app:app", "--host", "0.0.0.0", "--port", "8000"]
+
+  dashboard:
+    build: .
+    image: bmmm
+    ports:
+      - "8501:8501"
+    command:
+      ["streamlit", "run", "dashboard/app.py",
+       "--server.address", "0.0.0.0", "--server.port", "8501"]

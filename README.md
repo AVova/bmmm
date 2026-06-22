@@ -1,5 +1,12 @@
 # BMMM: Bayesian Marketing Mix Modeling
 
+[![CI](https://github.com/AVova/bmmm/actions/workflows/ci.yml/badge.svg)](https://github.com/AVova/bmmm/actions/workflows/ci.yml)
+[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://avova.github.io/bmmm/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
+**Live dashboard:** _add your Streamlit Cloud URL here after deploying_ &nbsp;|&nbsp;
+**Docs:** https://avova.github.io/bmmm/
+
 A Marketing Mix Model (MMM) built on
 [PyMC-Marketing](https://www.pymc-marketing.io/), with the engineering pieces
 around it: a typed config, a command-line tool, a small API, Docker, CI and an
@@ -31,8 +38,20 @@ uv run mkdocs serve                            # docs site
 ## Design note
 
 Fitting the model takes minutes, so we do it once and save the result. The API
-and dashboard load that saved result and never refit. CI runs a tiny 50-draw fit
-only to check that training still works.
+and dashboard both read that saved result and never refit. CI runs a tiny 50-draw
+fit only to check that training still works.
+
+The dashboard and the API reach the model in two different ways, on purpose:
+
+- The **API** (FastAPI, in Docker) loads the full PyMC model and serves live
+  predictions over HTTP, so other systems can integrate with it.
+- The **dashboard** does not call the API. It reads a small precomputed artifact
+  (`dashboard/assets/dashboard.json`, written by `bmmm export-dashboard`) and
+  recomputes everything in plain NumPy. This keeps the public Streamlit Cloud
+  deploy light: no PyMC, no 92 MB model, and no always-on server to call. The
+  textbook alternative (dashboard calls API, API calls model) would need a server
+  running 24/7 just to back a demo, so for a free public deploy the self-contained
+  dashboard wins.
 
 ## Stack
 

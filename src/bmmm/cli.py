@@ -68,8 +68,10 @@ def train(
     cfg = Config.from_yaml(config)
     df, gt = generate(cfg.data)
 
-    console.print(f"[cyan]Fitting MMM ({cfg.sampler.nuts_sampler}, "
-                  f"{cfg.sampler.draws} draws x {cfg.sampler.chains} chains)...[/cyan]")
+    console.print(
+        f"[cyan]Fitting MMM ({cfg.sampler.nuts_sampler}, "
+        f"{cfg.sampler.draws} draws x {cfg.sampler.chains} chains)...[/cyan]"
+    )
     mmm = build_mmm(cfg)
     fit_mmm(mmm, df, cfg, progressbar=progress)
 
@@ -92,7 +94,9 @@ def evaluate(
 
     console.print(f"[bold]Diagnostics:[/bold] {analysis.diagnostics(bundle.mmm)}")
     console.print(f"[bold]Fit metrics:[/bold] {analysis.fit_metrics(bundle.mmm, bundle.data)}")
-    console.print(_df_to_table(analysis.recovery_table(bundle.mmm, gt), "Parameter recovery (adstock alpha)"))
+    console.print(
+        _df_to_table(analysis.recovery_table(bundle.mmm, gt), "Parameter recovery (adstock alpha)")
+    )
     console.print(_df_to_table(analysis.channel_contributions(bundle.mmm), "Channel contributions"))
     console.print(_df_to_table(analysis.roas_table(bundle.mmm, bundle.data), "ROAS"))
 
@@ -100,7 +104,9 @@ def evaluate(
 @app.command("optimize-budget")
 def optimize_budget_cmd(
     artifact: ArtifactOpt = artifacts.DEFAULT_DIR,
-    budget_total: Annotated[float, typer.Option("--budget", help="Total weekly budget; default = current.")] = 0.0,
+    budget_total: Annotated[
+        float, typer.Option("--budget", help="Total weekly budget; default = current.")
+    ] = 0.0,
 ) -> None:
     """Compare current vs optimised budget allocation."""
     warnings.simplefilter("ignore")
@@ -135,7 +141,9 @@ def plots(
 def export_dashboard_cmd(
     artifact: ArtifactOpt = artifacts.DEFAULT_DIR,
     config: ConfigOpt = Path("configs/default.yaml"),
-    out: Annotated[Path, typer.Option(help="Dashboard assets directory.")] = Path("dashboard/assets"),
+    out: Annotated[Path, typer.Option(help="Dashboard assets directory.")] = Path(
+        "dashboard/assets"
+    ),
 ) -> None:
     """Export the compact dashboard artifact (JSON + figures), no PyMC at runtime."""
     import matplotlib

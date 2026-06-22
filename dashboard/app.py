@@ -61,9 +61,13 @@ def scenario_planner(data: DashboardData) -> None:
 
     left, right = st.columns([1, 2])
     with left:
-        budget = st.slider("Total weekly budget", min_value=0.0,
-                           max_value=round(2.5 * cur_spend, -1),
-                           value=float(round(cur_spend, -1)), step=50.0)
+        budget = st.slider(
+            "Total weekly budget",
+            min_value=0.0,
+            max_value=round(2.5 * cur_spend, -1),
+            value=float(round(cur_spend, -1)),
+            step=50.0,
+        )
         st.caption("Channel split (normalised to 100%)")
         weights = {}
         for ch in data.channels:
@@ -81,22 +85,32 @@ def scenario_planner(data: DashboardData) -> None:
         fig = go.Figure()
         fig.add_bar(name="sales driven", x=labels, y=sales, marker_color=GREEN)
         fig.add_scatter(
-            name="spend", x=labels, y=spend, mode="markers",
+            name="spend",
+            x=labels,
+            y=spend,
+            mode="markers",
             marker={"symbol": "line-ew", "size": 60, "line": {"color": RED, "width": 4}},
         )
         fig.update_layout(
-            height=360, margin={"t": 10, "b": 10, "l": 10, "r": 10},
-            yaxis_title="weekly sales vs spend", legend={"orientation": "h", "y": 1.12},
+            height=360,
+            margin={"t": 10, "b": 10, "l": 10, "r": 10},
+            yaxis_title="weekly sales vs spend",
+            legend={"orientation": "h", "y": 1.12},
         )
         st.plotly_chart(fig, use_container_width=True)
 
     k1, k2, k3 = st.columns(3)
-    k1.metric("Weekly sales from ads", f"{new_total:,.0f}",
-              delta=f"{new_total - cur_total:,.0f} vs current")
-    k2.metric("Weekly spend", f"{new_spend:,.0f}",
-              delta=f"{new_spend - cur_spend:,.0f} vs current")
-    k3.metric("Net (sales - spend)", f"{new_total - new_spend:,.0f}",
-              delta=f"{(new_total - new_spend) - (cur_total - cur_spend):,.0f} vs current")
+    k1.metric(
+        "Weekly sales from ads",
+        f"{new_total:,.0f}",
+        delta=f"{new_total - cur_total:,.0f} vs current",
+    )
+    k2.metric("Weekly spend", f"{new_spend:,.0f}", delta=f"{new_spend - cur_spend:,.0f} vs current")
+    k3.metric(
+        "Net (sales - spend)",
+        f"{new_total - new_spend:,.0f}",
+        delta=f"{(new_total - new_spend) - (cur_total - cur_spend):,.0f} vs current",
+    )
 
 
 # --------------------------------------------------------------------------- #
@@ -112,8 +126,9 @@ def budget_optimizer(data: DashboardData) -> None:
     pc = data.profit_curve
     b_cur, b_star = data.budget["current"], data.budget["profit_max"]
     hi = float(pc["budget"][-1])
-    chosen = st.slider("Total weekly budget", min_value=0.0, max_value=round(hi, -1),
-                       value=0.0, step=10.0)
+    chosen = st.slider(
+        "Total weekly budget", min_value=0.0, max_value=round(hi, -1), value=0.0, step=10.0
+    )
 
     point = interp_profit(pc, chosen)
     left, right = st.columns(2)
@@ -121,15 +136,31 @@ def budget_optimizer(data: DashboardData) -> None:
     with left:
         labels = [ch.label for ch in data.channels]
         fig = go.Figure()
-        fig.add_bar(name="current", x=labels, y=[ch.current_spend for ch in data.channels],
-                    marker_color=GREY)
-        fig.add_bar(name="optimal", x=labels,
-                    y=[point["allocation"][ch.name] for ch in data.channels], marker_color=GREEN)
-        fig.update_layout(barmode="group", height=320, margin={"t": 10, "b": 10, "l": 10, "r": 10},
-                          yaxis_title="weekly spend", legend={"orientation": "h", "y": 1.1})
+        fig.add_bar(
+            name="current",
+            x=labels,
+            y=[ch.current_spend for ch in data.channels],
+            marker_color=GREY,
+        )
+        fig.add_bar(
+            name="optimal",
+            x=labels,
+            y=[point["allocation"][ch.name] for ch in data.channels],
+            marker_color=GREEN,
+        )
+        fig.update_layout(
+            barmode="group",
+            height=320,
+            margin={"t": 10, "b": 10, "l": 10, "r": 10},
+            yaxis_title="weekly spend",
+            legend={"orientation": "h", "y": 1.1},
+        )
         st.plotly_chart(fig, use_container_width=True)
-        st.metric("Profit at this budget", f"{point['profit']:,.0f}",
-                  delta=f"marginal ROAS {point['marginal_roas']:.2f}")
+        st.metric(
+            "Profit at this budget",
+            f"{point['profit']:,.0f}",
+            delta=f"marginal ROAS {point['marginal_roas']:.2f}",
+        )
 
     with right:
         fig = go.Figure()
@@ -138,9 +169,13 @@ def budget_optimizer(data: DashboardData) -> None:
         fig.add_vline(x=b_cur, line_dash="dot", line_color=GREY, annotation_text="current")
         fig.add_vline(x=b_star, line_dash="dash", line_color=RED, annotation_text="profit-max")
         fig.add_vline(x=chosen, line_color="#444", annotation_text="you")
-        fig.update_layout(height=320, margin={"t": 10, "b": 10, "l": 10, "r": 10},
-                          xaxis_title="total weekly budget", yaxis_title="weekly sales / profit",
-                          legend={"orientation": "h", "y": 1.1})
+        fig.update_layout(
+            height=320,
+            margin={"t": 10, "b": 10, "l": 10, "r": 10},
+            xaxis_title="total weekly budget",
+            yaxis_title="weekly sales / profit",
+            legend={"orientation": "h", "y": 1.1},
+        )
         st.plotly_chart(fig, use_container_width=True)
 
 
@@ -148,8 +183,15 @@ def budget_optimizer(data: DashboardData) -> None:
 # Tabs
 # --------------------------------------------------------------------------- #
 tabs = st.tabs(
-    ["🎛 Scenario planner", "💰 Optimal total budget", "Parameter recovery", "Model fit",
-     "Contributions", "Trend & seasonality", "ROAS & budget"]
+    [
+        "🎛 Scenario planner",
+        "💰 Optimal total budget",
+        "Parameter recovery",
+        "Model fit",
+        "Contributions",
+        "Trend & seasonality",
+        "ROAS & budget",
+    ]
 )
 
 with tabs[0]:
@@ -210,5 +252,7 @@ with tabs[6]:
     st.image(img("budget_profit"), width=620)
 
 st.divider()
-st.caption("Built with PyMC-Marketing, ArviZ and Streamlit. The model is trained offline; "
-           "this app reads a small precomputed artifact.")
+st.caption(
+    "Built with PyMC-Marketing, ArviZ and Streamlit. The model is trained offline; "
+    "this app reads a small precomputed artifact."
+)

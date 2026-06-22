@@ -59,3 +59,16 @@ curl -X POST localhost:8000/optimize-budget \
 
 Request/response schemas are defined in [`bmmm.service.schemas`](api/service-schemas.md)
 and validated by Pydantic, so FastAPI generates the OpenAPI docs automatically.
+
+## Where the API fits
+
+By default nothing in this project calls the API: the dashboard is deliberately
+self-contained. It reads a small exported artifact (written by
+`bmmm export-dashboard`) and recomputes responses in NumPy, so the public
+Streamlit Cloud deploy stays light (no PyMC, no 92 MB model, no always-on server
+to call).
+
+The API is the integration path instead. It is how another system (an analyst's
+script, a BI tool, an internal budget planner) would consume the model over HTTP
+without importing any of this code. `docker compose up` runs it next to the
+dashboard so both paths are visible at once.

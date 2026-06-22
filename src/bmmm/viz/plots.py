@@ -41,7 +41,10 @@ def plot_recovery(mmm: MMM, ground_truth: GroundTruth) -> Figure:
     ax.errorbar(
         table["posterior_mean"],
         y,
-        xerr=[table["posterior_mean"] - table["hdi_low"], table["hdi_high"] - table["posterior_mean"]],
+        xerr=[
+            table["posterior_mean"] - table["hdi_low"],
+            table["hdi_high"] - table["posterior_mean"],
+        ],
         fmt="o",
         color="#1f77b4",
         capsize=4,
@@ -184,7 +187,9 @@ def plot_budget_profit(curve: pd.DataFrame, current_budget: float, b_star: float
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 7), sharex=True)
     ax1.plot(curve["budget"], curve["ad_sales"], color="#1f77b4", label="ad-driven sales")
     ax1.plot(curve["budget"], curve["profit"], color="#2ca02c", label="profit (sales - budget)")
-    ax1.axvline(current_budget, color="grey", ls=":", lw=1.5, label=f"current ({current_budget:.0f})")
+    ax1.axvline(
+        current_budget, color="grey", ls=":", lw=1.5, label=f"current ({current_budget:.0f})"
+    )
     ax1.axvline(b_star, color="#d62728", ls="--", lw=1.5, label=f"profit-max ({b_star:.0f})")
     ax1.set_ylabel("weekly sales / profit")
     ax1.set_title("Profit peaks below the current budget")
@@ -206,7 +211,9 @@ def plot_saturation_curves(ground_truth: GroundTruth, max_x: float = 3.0) -> Fig
     x = np.linspace(0, max_x, 100)
     for ch in ground_truth.channel_names:
         lam = ground_truth.saturation_lam[ch]
-        ax.plot(x, logistic_saturation(x, lam), label=f"{_lbl(ch, ground_truth.labels)} (lam={lam:.1f})")
+        ax.plot(
+            x, logistic_saturation(x, lam), label=f"{_lbl(ch, ground_truth.labels)} (lam={lam:.1f})"
+        )
     ax.set_xlabel("adstocked spend (scaled)")
     ax.set_ylabel("saturated response")
     ax.set_title("Saturation curves (diminishing returns)")
@@ -270,7 +277,12 @@ def plot_adstock_decay(ground_truth: GroundTruth, l_max: int = 12) -> Figure:
     for ch in ground_truth.channel_names:
         alpha = ground_truth.adstock_alpha[ch]
         decay = geometric_adstock(impulse, alpha, l_max, normalize=False)
-        ax.plot(range(l_max), decay, marker="o", label=f"{_lbl(ch, ground_truth.labels)} (alpha={alpha:.2f})")
+        ax.plot(
+            range(l_max),
+            decay,
+            marker="o",
+            label=f"{_lbl(ch, ground_truth.labels)} (alpha={alpha:.2f})",
+        )
     ax.set_xlabel("weeks since spend")
     ax.set_ylabel("retained effect (week 0 = 1.0)")
     ax.set_title("Adstock decay (carry-over) by channel")
@@ -278,7 +290,9 @@ def plot_adstock_decay(ground_truth: GroundTruth, l_max: int = 12) -> Figure:
     return fig
 
 
-def save_all(mmm: MMM, df: pd.DataFrame, ground_truth: GroundTruth, out_dir: str | Path) -> list[Path]:
+def save_all(
+    mmm: MMM, df: pd.DataFrame, ground_truth: GroundTruth, out_dir: str | Path
+) -> list[Path]:
     """Render the full figure set to ``out_dir`` (used to populate the docs)."""
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)

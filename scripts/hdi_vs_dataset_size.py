@@ -17,14 +17,14 @@ import matplotlib
 
 matplotlib.use("Agg")
 
-import matplotlib.pyplot as plt  # noqa: E402
-import numpy as np  # noqa: E402
-import pandas as pd  # noqa: E402
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
-from bmmm.config import Config  # noqa: E402
-from bmmm.data.generate import generate  # noqa: E402
-from bmmm.model import analysis  # noqa: E402
-from bmmm.model.mmm import build_mmm, fit_mmm  # noqa: E402
+from bmmm.config import Config
+from bmmm.data.generate import generate
+from bmmm.model import analysis
+from bmmm.model.mmm import build_mmm, fit_mmm
 
 warnings.filterwarnings("ignore")
 

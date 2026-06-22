@@ -140,9 +140,7 @@ def generate(config: DataConfig) -> tuple[pd.DataFrame, GroundTruth]:
     noise = rng.normal(0, config.noise_sigma, size=n)
     sales = np.clip(sales + noise, 0, None)
 
-    df = pd.DataFrame(
-        {"date": dates, **data, "price": price, "time": time_index, "sales": sales}
-    )
+    df = pd.DataFrame({"date": dates, **data, "price": price, "time": time_index, "sales": sales})
 
     gt = GroundTruth(
         channel_names=config.channel_names,

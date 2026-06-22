@@ -37,7 +37,9 @@ def build_dashboard_data(mmm: Any, df: pd.DataFrame, gt: GroundTruth) -> dict[st
     rec_mean = recovery["posterior_mean"].to_dict()
     rec_lo = recovery["hdi_low"].to_dict()
     rec_hi = recovery["hdi_high"].to_dict()
-    shares = analysis.channel_contributions(mmm).set_index("channel")["contribution_share"].to_dict()
+    shares = (
+        analysis.channel_contributions(mmm).set_index("channel")["contribution_share"].to_dict()
+    )
     roas = analysis.roas_table(mmm, df).set_index("channel")["roas_mean"].to_dict()
 
     # Profit curve plus the optimal split at each budget level, so the dashboard
