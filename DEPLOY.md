@@ -9,27 +9,6 @@ on branch `main`.
 
 ---
 
-## 1. Verify locally before pushing
-
-This is exactly what CI checks, so run it first to keep CI green.
-
-```bash
-uv sync --group dev
-uv run ruff check .
-uv run ruff format --check .
-uv run mypy src
-uv run pytest                 # all tests, including the slow MCMC smoke test
-```
-
-Build the docs the same way Pages will:
-
-```bash
-uv sync --group docs
-uv run mkdocs build --strict  # fails on broken links/refs -> catches Pages errors early
-```
-
----
-
 ## 2. Docker (optional locally, validated by CI)
 
 You do not have Docker installed locally; CI builds the image on every push, so
