@@ -1,0 +1,4 @@
+# Dashboard runtime: light deps only, no PyMC / pymc-marketing.
+streamlit>=1.40.0
+plotly>=5.24.0
+numpy>=1.26.0

@@ -17,8 +17,9 @@ from pymc_marketing.mmm import MMM, GeometricAdstock, LogisticSaturation
 from pymc_marketing.prior import Prior
 
 from bmmm.config import Config
+from bmmm.constants import TARGET
 
-TARGET = "sales"
+__all__ = ["MMM", "TARGET", "build_mmm", "fit_mmm", "idata_group", "load_mmm", "save_mmm", "split_xy"]
 
 
 def idata_group(mmm: MMM, name: str) -> xr.Dataset:

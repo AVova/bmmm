@@ -19,14 +19,20 @@ the ``max`` terms undo the model's max-abs scaling.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
-from pymc_marketing.mmm import MMM
 from scipy.optimize import minimize
 
+from bmmm.constants import TARGET
 from bmmm.data.transforms import logistic_saturation
-from bmmm.model.mmm import TARGET, split_xy
+
+if TYPE_CHECKING:
+    # Only needed for type hints; importing it pulls the heavy PyMC stack, which
+    # the dashboard must avoid. Functions that take a fitted ``MMM`` are not used
+    # there, so this module stays light to import.
+    from pymc_marketing.mmm import MMM
 
 
 @dataclass
@@ -47,7 +53,6 @@ class ResponseCurve:
 
 def response_curves(mmm: MMM, df: pd.DataFrame, quantile: float = 0.5) -> dict[str, ResponseCurve]:
     """Extract a response curve per channel from the fitted posterior."""
-    x, _ = split_xy(df)
     target_scale = float(df[TARGET].max())
     recovered = mmm.format_recovered_transformation_parameters(quantile=quantile)
     curves: dict[str, ResponseCurve] = {}
@@ -57,7 +62,7 @@ def response_curves(mmm: MMM, df: pd.DataFrame, quantile: float = 0.5) -> dict[s
             channel=ch,
             lam=float(sat["lam"]),
             beta=float(sat["beta"]),
-            spend_scale=float(x[ch].max()),
+            spend_scale=float(df[ch].max()),
             target_scale=target_scale,
         )
     return curves
@@ -65,8 +70,7 @@ def response_curves(mmm: MMM, df: pd.DataFrame, quantile: float = 0.5) -> dict[s
 
 def current_allocation(df: pd.DataFrame, channels: list[str]) -> dict[str, float]:
     """Mean historical weekly spend per channel (the 'before' baseline)."""
-    x, _ = split_xy(df)
-    return {ch: float(x[ch].mean()) for ch in channels}
+    return {ch: float(df[ch].mean()) for ch in channels}
 
 
 def total_response(allocation: dict[str, float], curves: dict[str, ResponseCurve]) -> float:

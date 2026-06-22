@@ -131,5 +131,22 @@ def plots(
     console.print(f"[green]Wrote {len(paths)} figures to {out}/[/green]")
 
 
+@app.command("export-dashboard")
+def export_dashboard_cmd(
+    artifact: ArtifactOpt = artifacts.DEFAULT_DIR,
+    config: ConfigOpt = Path("configs/default.yaml"),
+    out: Annotated[Path, typer.Option(help="Dashboard assets directory.")] = Path("dashboard/assets"),
+) -> None:
+    """Export the compact dashboard artifact (JSON + figures), no PyMC at runtime."""
+    import matplotlib
+
+    matplotlib.use("Agg")
+    warnings.simplefilter("ignore")
+    from bmmm.dashboard_export import export_dashboard
+
+    path = export_dashboard(artifact, out, config)
+    console.print(f"[green]Wrote {path} and figures to {out}/img/[/green]")
+
+
 if __name__ == "__main__":
     app()
